@@ -16,7 +16,7 @@ namespace SystemEmergencyResponderClient
 
         public List<string> _subscribedTopics { get; set; }
         private string[] subscribedTopics;
-        private const string MQTT_BROKER_ADDRESS = "127.0.0.1";
+        private const string MQTT_BROKER_ADDRESS = "172.104.35.200";
 
         private void SubscribeToViolationEvent()
         {
@@ -26,29 +26,30 @@ namespace SystemEmergencyResponderClient
         public EmergencyResponderClient()
         {
             // create client instance 
-            client = new MqttClient(IPAddress.Parse(MQTT_BROKER_ADDRESS));
+            client = new MqttClient(IPAddress.Parse("172.104.35.200"));
             _subscribedTopics = new List<string>();
-            _subscribedTopics.Add("/AlarmSystem/Violation");
+            _subscribedTopics.Add("esp32/temperature");
             client.MqttMsgSubscribeReceived += Client_MqttMsgSubscribeReceived;
         }
 
         private void Client_MqttMsgSubscribeReceived(object sender, uPLibrary.Networking.M2Mqtt.Messages.MqttMsgSubscribeEventArgs e)
         {
-            if (e.Topics.Contains("/Alarm/Violation"))
+            if (e.Topics.Contains("temperature"))
             {
-                Shutdown_Host_System();
+                //Shutdown_Host_System();
+
             }
         }
 
         public void Run()
         {
             string clientId = Guid.NewGuid().ToString();
-            while (!client.IsConnected)
-            {
+            //while (!client.IsConnected)
+            //{
 
-                client.Connect(clientId, "OfficeServerClient", "OfficeServerPass");
+                client.Connect(clientId);
                 System.Threading.Thread.Sleep(2500);
-            }
+            //}
 
             SubscribeToViolationEvent();
         }
